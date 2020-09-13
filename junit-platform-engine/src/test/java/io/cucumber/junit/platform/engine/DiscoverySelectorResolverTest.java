@@ -11,6 +11,7 @@ import org.junit.platform.engine.EngineDiscoveryRequest;
 import org.junit.platform.engine.TestDescriptor;
 import org.junit.platform.engine.UniqueId;
 import org.junit.platform.engine.discovery.DiscoverySelectors;
+import org.junit.platform.engine.discovery.FilePosition;
 import org.junit.platform.engine.discovery.UniqueIdSelector;
 
 import java.io.File;
@@ -60,6 +61,28 @@ class DiscoverySelectorResolverTest {
         EngineDiscoveryRequest discoveryRequest = new SelectorRequest(resource);
         resolver.resolveSelectors(discoveryRequest, testDescriptor);
         assertEquals(1, testDescriptor.getChildren().size());
+    }
+
+    @Test
+    void resolveRequestWithClasspathResourceSelectorAndFilePosition() {
+        DiscoverySelector resource = selectClasspathResource("io/cucumber/junit/platform/engine/rule.feature", FilePosition.from(5));
+        EngineDiscoveryRequest discoveryRequest = new SelectorRequest(resource);
+        resolver.resolveSelectors(discoveryRequest, testDescriptor);
+        assertEquals(1L, testDescriptor.getDescendants()
+                .stream()
+                .filter(TestDescriptor::isTest)
+                .count());
+    }
+
+    @Test
+    void resolveRequestWithClasspathResourceSelectorAndFilePositionOfContainer() {
+        DiscoverySelector resource = selectClasspathResource("io/cucumber/junit/platform/engine/rule.feature", FilePosition.from(3));
+        EngineDiscoveryRequest discoveryRequest = new SelectorRequest(resource);
+        resolver.resolveSelectors(discoveryRequest, testDescriptor);
+        assertEquals(2L, testDescriptor.getDescendants()
+                .stream()
+                .filter(TestDescriptor::isTest)
+                .count());
     }
 
     @Test
@@ -153,6 +176,28 @@ class DiscoverySelectorResolverTest {
         EngineDiscoveryRequest discoveryRequest = new SelectorRequest(resource);
         resolver.resolveSelectors(discoveryRequest, testDescriptor);
         assertEquals(1, testDescriptor.getChildren().size());
+    }
+
+    @Test
+    void resolveRequestWithFileSelectorAndPosition() {
+        DiscoverySelector resource = selectFile("src/test/resources/io/cucumber/junit/platform/engine/rule.feature", FilePosition.from(5));
+        EngineDiscoveryRequest discoveryRequest = new SelectorRequest(resource);
+        resolver.resolveSelectors(discoveryRequest, testDescriptor);
+        assertEquals(1L, testDescriptor.getDescendants()
+                .stream()
+                .filter(TestDescriptor::isTest)
+                .count());
+    }
+
+    @Test
+    void resolveRequestWithFileSelectorAndPositionOfContainer() {
+        DiscoverySelector resource = selectFile("src/test/resources/io/cucumber/junit/platform/engine/rule.feature", FilePosition.from(3));
+        EngineDiscoveryRequest discoveryRequest = new SelectorRequest(resource);
+        resolver.resolveSelectors(discoveryRequest, testDescriptor);
+        assertEquals(2L, testDescriptor.getDescendants()
+                .stream()
+                .filter(TestDescriptor::isTest)
+                .count());
     }
 
     @Test
